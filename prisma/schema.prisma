@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  habits    Habit[]
+}
+
+model Habit {
+  id        Int          @id @default(autoincrement())
+  name      String
+  userId    Int
+  user      User         @relation(fields: [userId], references: [id])
+  entries   HabitEntry[]
+  createdAt DateTime     @default(now())
+}
+
+model HabitEntry {
+  id        Int      @id @default(autoincrement())
+  date      String   // YYYY-MM-DD format
+  completed Boolean  @default(false)
+  habitId   Int
+  habit     Habit    @relation(fields: [habitId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([habitId, date])
+}
